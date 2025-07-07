@@ -79,7 +79,7 @@ apptainer exec --nv \
     python train_temperature_sr.py \
     --data_dir /home/vdidur/temperature_sr_project/data \
     --output_dir ./experiments \
-    --num_epochs 70
+    --num_epochs 40
 
 echo "============================================"
 echo "Temperature SR 2x Training Job Finished: $(date)"

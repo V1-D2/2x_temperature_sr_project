@@ -138,7 +138,7 @@ val = {
 
 # Логирование
 logger = {
-    'print_freq': 10000,
+    'print_freq': 1000,
     'save_checkpoint_freq': 100000,
     'use_tb_logger': True,
     'wandb': {

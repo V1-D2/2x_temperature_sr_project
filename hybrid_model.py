@@ -221,7 +221,8 @@ class TemperatureSRModel(SRGANModel):
 
     def optimize_parameters(self, current_iter):
         """Оптимизация с учетом физических ограничений"""
-        # Оптимизация генератора
+
+        # ============ ГЕНЕРАТОР ОБУЧАЕТСЯ ВСЕГДА ============
         for p in self.net_d.parameters():
             p.requires_grad = False
 
@@ -231,56 +232,61 @@ class TemperatureSRModel(SRGANModel):
         l_g_total = 0
         loss_dict = OrderedDict()
 
-        if (current_iter % self.net_d_iters == 0 and current_iter > self.net_d_init_iters):
-            # Pixel loss с физической консистентностью
-            if self.cri_pix:
-                l_g_pix, pix_losses = self.cri_pix(self.output, self.gt)
-                l_g_total += l_g_pix
-                loss_dict['l_g_pix'] = l_g_pix
-                for k, v in pix_losses.items():
-                    loss_dict[f'l_g_pix_{k}'] = v
+        # Pixel loss - ВСЕГДА
+        if self.cri_pix:
+            l_g_pix, pix_losses = self.cri_pix(self.output, self.gt)
+            l_g_total += l_g_pix * self.opt['train']['pixel_opt']['loss_weight']
+            loss_dict['l_g_pix'] = l_g_pix
+            for k, v in pix_losses.items():
+                loss_dict[f'l_g_pix_{k}'] = v
 
-            # Perceptual loss
-            if self.cri_perceptual:
-                l_g_percep = self.cri_perceptual(self.output, self.gt)
-                l_g_total += l_g_percep
-                loss_dict['l_g_percep'] = l_g_percep
+        # Perceptual loss - ВСЕГДА
+        if self.cri_perceptual:
+            l_g_percep = self.cri_perceptual(self.output, self.gt)
+            l_g_total += l_g_percep * self.opt['train']['perceptual_opt']['loss_weight']
+            loss_dict['l_g_percep'] = l_g_percep
 
-            # GAN loss
-            if self.cri_gan:
-                fake_g_pred = self.net_d(self.output)
-                l_g_gan = self.cri_gan(fake_g_pred, True, is_disc=False)
-                l_g_total += l_g_gan
-                loss_dict['l_g_gan'] = l_g_gan
+        # GAN loss - только после прогрева
+        if self.cri_gan and current_iter > self.net_d_init_iters:
+            fake_g_pred = self.net_d(self.output)
+            l_g_gan = self.cri_gan(fake_g_pred, True, is_disc=False)
+            l_g_total += l_g_gan
+            loss_dict['l_g_gan'] = l_g_gan
 
-            l_g_total.backward()
+        # ВСЕГДА обновляем генератор
+        l_g_total.backward()
 
-            # Gradient clipping для стабильности
-            torch.nn.utils.clip_grad_norm_(self.net_g.parameters(), max_norm=1.0)
+        # Gradient clipping
+        if self.opt['train'].get('use_grad_clip', True):
+            torch.nn.utils.clip_grad_norm_(
+                self.net_g.parameters(),
+                max_norm=self.opt['train'].get('grad_clip_norm', 1.0)  # Увеличено с 0.1
+            )
 
-            self.optimizer_g.step()
+        self.optimizer_g.step()
 
-        # Оптимизация дискриминатора
-        for p in self.net_d.parameters():
-            p.requires_grad = True
+        # ============ ДИСКРИМИНАТОР ============
+        if current_iter > self.net_d_init_iters and current_iter % self.net_d_iters == 0:
+            for p in self.net_d.parameters():
+                p.requires_grad = True
 
-        self.optimizer_d.zero_grad()
+            self.optimizer_d.zero_grad()
 
-        # Real
-        real_d_pred = self.net_d(self.gt)
-        l_d_real = self.cri_gan(real_d_pred, True, is_disc=True)
-        loss_dict['l_d_real'] = l_d_real
-        loss_dict['out_d_real'] = torch.mean(real_d_pred.detach())
-        l_d_real.backward()
+            # Real
+            real_d_pred = self.net_d(self.gt)
+            l_d_real = self.cri_gan(real_d_pred, True, is_disc=True)
+            loss_dict['l_d_real'] = l_d_real
+            loss_dict['out_d_real'] = torch.mean(real_d_pred.detach())
+            l_d_real.backward()
 
-        # Fake
-        fake_d_pred = self.net_d(self.output.detach().clone())
-        l_d_fake = self.cri_gan(fake_d_pred, False, is_disc=True)
-        loss_dict['l_d_fake'] = l_d_fake
-        loss_dict['out_d_fake'] = torch.mean(fake_d_pred.detach())
-        l_d_fake.backward()
+            # Fake
+            fake_d_pred = self.net_d(self.output.detach())
+            l_d_fake = self.cri_gan(fake_d_pred, False, is_disc=True)
+            loss_dict['l_d_fake'] = l_d_fake
+            loss_dict['out_d_fake'] = torch.mean(fake_d_pred.detach())
+            l_d_fake.backward()
 
-        self.optimizer_d.step()
+            self.optimizer_d.step()
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
 
