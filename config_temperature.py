@@ -120,7 +120,7 @@ train = {
 
 # Параметры валидации
 val = {
-    'val_freq': 5000,
+    'val_freq': 10000,
     'save_img': True,
     'metrics': {
         'psnr': {
@@ -138,7 +138,7 @@ val = {
 
 # Логирование
 logger = {
-    'print_freq': 5000,
+    'print_freq': 10000,
     'save_checkpoint_freq': 100000,
     'use_tb_logger': True,
     'wandb': {
