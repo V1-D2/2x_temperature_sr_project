@@ -151,17 +151,17 @@ class TemperatureSRModel(SRGANModel):
 
         # Параметры для 8x увеличения с 1 каналом
         model = SwinIR(
-            upscale=8,  # 8x увеличение
+            upscale=2,  # 8x увеличение
             in_chans=1,  # 1 канал входа
             img_size=opt_net.get('img_size', 64),
             window_size=opt_net.get('window_size', 8),
             img_range=1.,
-            depths=opt_net.get('depths', [6, 6, 6, 6, 6, 6]),
-            embed_dim=opt_net.get('embed_dim', 180),
-            num_heads=opt_net.get('num_heads', [6, 6, 6, 6, 6, 6]),
-            mlp_ratio=opt_net.get('mlp_ratio', 2),
+            depths=opt_net.get('depths', [8, 8, 8, 8, 8, 8, 8, 8]),
+            embed_dim=opt_net.get('embed_dim', 240),
+            num_heads=opt_net.get('num_heads', [8, 8, 8, 8, 8, 8, 8, 8]),
+            mlp_ratio=opt_net.get('mlp_ratio', 4),
             upsampler=opt_net.get('upsampler', 'pixelshuffle'),
-            resi_connection=opt_net.get('resi_connection', '1conv')
+            resi_connection=opt_net.get('resi_connection', '3conv')
         )
 
         return model

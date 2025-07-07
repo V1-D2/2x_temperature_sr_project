@@ -1,9 +1,9 @@
 # Конфигурация для обучения температурной Super-Resolution модели
 
 # Общие параметры
-name = 'TemperatureSR_SwinIR_ESRGAN_x8'
+name = 'TemperatureSR_SwinIR_ESRGAN_x2'
 model_type = 'TemperatureSRModel'
-scale = 8
+scale = 2
 num_gpu = 1  # Количество GPU
 
 # Параметры данных
@@ -16,8 +16,8 @@ datasets = {
             'target_height': 2000,
             'target_width': 220
         },
-        'scale_factor': 8,
-        'batch_size': 8,
+        'scale_factor': 2,
+        'batch_size': 16,
         'samples_per_file': 10000,  # Ограничение для управления памятью
         'num_worker': 4,
         'pin_memory': True,
@@ -27,25 +27,25 @@ datasets = {
         'name': 'TemperatureValDataset',
         'dataroot_gt': None,
         'npz_file': None,  # Будет задан в train script
-        'n_samples': 100,
-        'scale_factor': 8
+        'n_samples': 10,
+        'scale_factor': 2
     }
 }
 
 # Параметры сети
 network_g = {
     'type': 'SwinIR',
-    'upscale': 8,
+    'upscale': 2,
     'in_chans': 1,  # Температурные данные - 1 канал
     'img_size': 64,
     'window_size': 8,
     'img_range': 1.,
-    'depths': [6, 6, 6, 6, 6, 6],
-    'embed_dim': 180,
-    'num_heads': [6, 6, 6, 6, 6, 6],
-    'mlp_ratio': 2,
+    'depths': [8, 8, 8, 8, 8, 8, 8, 8],
+    'embed_dim': 240,
+    'num_heads': [8, 8, 8, 8, 8, 8, 8, 8],
+    'mlp_ratio': 4,
     'upsampler': 'pixelshuffle',
-    'resi_connection': '1conv'
+    'resi_connection': '3conv'
 }
 
 network_d = {
@@ -73,48 +73,48 @@ train = {
     'ema_decay': 0.999,
     'optim_g': {
         'type': 'Adam',
-        'lr': 2e-4,
-        'weight_decay': 0,
+        'lr': 1e-4,
+        'weight_decay': 1e-4,
         'betas': [0.9, 0.99]
     },
     'optim_d': {
         'type': 'Adam',
-        'lr': 1e-4,
-        'weight_decay': 0,
+        'lr': 5e-5,
+        'weight_decay': 1e-4,
         'betas': [0.9, 0.99]
     },
     'scheduler': {
         'type': 'CosineAnnealingLR',
-        'T_max': 70000,
-        'eta_min': 1e-6
+        'T_max': 100000,
+        'eta_min': 1e-7
     },
     # Loss функции
     'pixel_opt': {
         'type': 'PhysicsConsistencyLoss',
         'loss_weight': 1.0,
-        'gradient_weight': 0.05,
-        'smoothness_weight': 0.02,
+        'gradient_weight': 0.08,
+        'smoothness_weight': 0.03,
         'reduction': 'mean'
     },
     'perceptual_opt': {
         'type': 'TemperaturePerceptualLoss',
-        'loss_weight': 0.05,
-        'feature_weights': [0.1, 0.1, 1.0, 1.0]
+        'loss_weight': 0.1,
+        'feature_weights': [0.1, 0.2, 1.0, 1.0]
     },
     'gan_opt': {
         'type': 'gan',
         'gan_type': 'lsgan',
         'real_label_val': 1.0,
         'fake_label_val': 0.0,
-        'loss_weight': 0.05
+        'loss_weight': 0.1
     },
     # Параметры дискриминатора
-    'net_d_iters': 2,
-    'net_d_init_iters': 2000,
+    'net_d_iters': 1,
+    'net_d_init_iters': 1000,
     # Частота сохранения
     'manual_seed': 10,
     'use_grad_clip': True,
-    'grad_clip_norm': 0.5,
+    'grad_clip_norm': 0.1,
     'use_ema': True                 # Exponential Moving Averag
 }
 

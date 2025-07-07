@@ -79,7 +79,7 @@ class TemperatureDataPreprocessor:
 
         return temp_array
 
-    def create_lr_hr_pair(self, hr_temp: np.ndarray, scale_factor: int = 8) -> Tuple[np.ndarray, np.ndarray]:
+    def create_lr_hr_pair(self, hr_temp: np.ndarray, scale_factor: int = 2) -> Tuple[np.ndarray, np.ndarray]:
         """Создание пары низкое-высокое разрешение для обучения"""
         h, w = hr_temp.shape
 
