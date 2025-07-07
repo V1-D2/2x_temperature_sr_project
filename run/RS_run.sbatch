@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=temperature_sr
+#SBATCH --job-name=temperature_sr_2x
 #SBATCH --output=%x_%j.out
 #SBATCH --error=%x_%j.err
 #SBATCH --partition=salvador
@@ -9,7 +9,7 @@
 #SBATCH --time=72:00:00
 
 echo "============================================"
-echo "Temperature SR Training Job Started: $(date)"
+echo "Temperature SR 2x Training Job Started: $(date)"
 echo "Node: $SLURMD_NODENAME"
 echo "GPUs assigned: $CUDA_VISIBLE_DEVICES"
 echo "Memory allocated: 64GB per GPU"
@@ -61,10 +61,10 @@ except Exception as e:
 "
 
 echo "============================================"
-echo "Starting Temperature SR training with TensorFlow container:"
+echo "Starting Temperature SR 2x training with TensorFlow container:"
 
-# Change to project directory
-cd $HOME/temperature_sr_project
+# Change to NEW project directory - ИСПРАВЛЕНО
+cd $HOME/2x_temperature_sr_project
 
 # Fix CUDA memory fragmentation
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
@@ -72,14 +72,15 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # Запускаем Temperature SR обучение в TensorFlow контейнере
 apptainer exec --nv \
     --bind $HOME/local-python:$HOME/.local \
-    --bind $HOME/temperature_sr_project:$HOME/temperature_sr_project \
-    --env PYTHONPATH=$HOME/temperature_sr_project:$PYTHONPATH \
+    --bind $HOME/2x_temperature_sr_project:$HOME/2x_temperature_sr_project \
+    --bind /home/vdidur/temperature_sr_project/data:/home/vdidur/temperature_sr_project/data \
+    --env PYTHONPATH=$HOME/2x_temperature_sr_project:$PYTHONPATH \
     /home/shared/containers/tensorflow-25.02-py3.sif \
     python train_temperature_sr.py \
-    --data_dir ./data \
+    --data_dir /home/vdidur/temperature_sr_project/data \
     --output_dir ./experiments \
     --num_epochs 70
 
 echo "============================================"
-echo "Temperature SR Training Job Finished: $(date)"
+echo "Temperature SR 2x Training Job Finished: $(date)"
 echo "============================================"
