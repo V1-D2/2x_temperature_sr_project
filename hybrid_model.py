@@ -260,7 +260,7 @@ class TemperatureSRModel(SRGANModel):
         if self.opt['train'].get('use_grad_clip', True):
             torch.nn.utils.clip_grad_norm_(
                 self.net_g.parameters(),
-                max_norm=self.opt['train'].get('grad_clip_norm', 1.0)  # Увеличено с 0.1
+                max_norm=self.opt['train'].get('grad_clip_norm', 20.0)  # Увеличено с 0.1
             )
 
         self.optimizer_g.step()

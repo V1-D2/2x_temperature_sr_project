@@ -240,7 +240,7 @@ def main():
         temp_norm = preprocessor.normalize_temperature(temp)
 
         # Создаем пару LR-HR
-        lr, hr = preprocessor.create_lr_hr_pair(temp_norm, scale_factor=8)
+        lr, hr = preprocessor.create_lr_hr_pair(temp_norm, scale_factor=2)
 
         # Подготовка данных для модели
         test_data = {
