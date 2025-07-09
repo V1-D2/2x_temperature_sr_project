@@ -109,8 +109,8 @@ train = {
         'loss_weight': 0.1
     },
     # Параметры дискриминатора
-    'net_d_iters': 1,
-    'net_d_init_iters': 1000,
+    'net_d_iters': 10,
+    'net_d_init_iters': 2000,
     # Частота сохранения
     'manual_seed': 10,
     'use_grad_clip': True,
