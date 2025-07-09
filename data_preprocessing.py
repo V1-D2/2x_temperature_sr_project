@@ -110,7 +110,7 @@ class TemperatureDataset(Dataset):
     """Dataset для температурных данных с инкрементальной загрузкой"""
 
     def __init__(self, npz_file: str, preprocessor: TemperatureDataPreprocessor,
-                 scale_factor: int = 8, max_samples: Optional[int] = None):
+                 scale_factor: int = 2, max_samples: Optional[int] = None):
         self.npz_file = npz_file
         self.preprocessor = preprocessor
         self.scale_factor = scale_factor
@@ -189,7 +189,7 @@ class IncrementalDataLoader:
     """Загрузчик данных с инкрементальной загрузкой по файлам"""
 
     def __init__(self, npz_files: List[str], preprocessor: TemperatureDataPreprocessor,
-                 batch_size: int = 4, scale_factor: int = 8,
+                 batch_size: int = 4, scale_factor: int = 2,
                  samples_per_file: Optional[int] = None):
         self.npz_files = npz_files
         self.preprocessor = preprocessor
@@ -229,7 +229,7 @@ class IncrementalDataLoader:
 
 
 def create_validation_set(npz_file: str, preprocessor: TemperatureDataPreprocessor,
-                          n_samples: int = 100, scale_factor: int = 8) -> DataLoader:
+                          n_samples: int = 100, scale_factor: int = 2) -> DataLoader:
     """Создание валидационного набора из отдельного файла"""
     dataset = TemperatureDataset(npz_file, preprocessor, scale_factor, max_samples=n_samples)
     return DataLoader(dataset, batch_size=1, shuffle=False, num_workers=1)
