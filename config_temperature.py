@@ -18,7 +18,7 @@ datasets = {
         },
         'scale_factor': 2,
         'batch_size': 16,
-        'samples_per_file': 5000,  # Ограничение для управления памятью
+        'samples_per_file': 3000,  # Ограничение для управления памятью
         'num_worker': 4,
         'pin_memory': True,
         'persistent_workers': True
