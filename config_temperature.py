@@ -40,9 +40,9 @@ network_g = {
     'img_size': 64,
     'window_size': 8,
     'img_range': 1.,
-    'depths': [6, 6, 6, 6],
+    'depths': [6, 6, 6, 6, 6, 6],
     'embed_dim': 60,
-    'num_heads': [6, 6, 6, 6],
+    'num_heads': [6, 6, 6, 6, 6, 6],
     'mlp_ratio': 4,
     'upsampler': 'pixelshuffle',
     'resi_connection': '3conv'
@@ -120,7 +120,7 @@ train = {
 
 # Параметры валидации
 val = {
-    'val_freq': 10000,
+    'val_freq': 30000,
     'save_img': True,
     'metrics': {
         'psnr': {
@@ -139,8 +139,8 @@ val = {
 # Логирование
 logger = {
     'print_freq': 1000,
-    'save_checkpoint_freq': 100000,
-    'use_tb_logger': True,
+    'save_checkpoint_freq': 400000,
+    'use_tb_logger': False,
     'wandb': {
         'project': 'temperature-sr',
         'resume_id': None
@@ -167,7 +167,7 @@ temperature_specific = {
 # Инкрементальное обучение
 incremental_training = {
     'enabled': True,
-    'epochs_per_file': 1,
+    'epochs_per_file': 2,
     'learning_rate_decay_per_file': 1.0,
     'checkpoint_per_file': False,
     'shuffle_files': True
