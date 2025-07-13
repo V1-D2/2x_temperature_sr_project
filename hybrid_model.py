@@ -263,6 +263,7 @@ class TemperatureSRModel(SRGANModel):
                 max_norm=self.opt['train'].get('grad_clip_norm', 20.0)  # Увеличено с 0.1
             )
 
+        torch.cuda.empty_cache()
         self.optimizer_g.step()
 
         # ============ ДИСКРИМИНАТОР ============
