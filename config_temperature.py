@@ -167,7 +167,7 @@ temperature_specific = {
 # Инкрементальное обучение
 incremental_training = {
     'enabled': True,
-    'epochs_per_file': 2,
+    'epochs_per_file': 1,
     'learning_rate_decay_per_file': 1.0,
     'checkpoint_per_file': False,
     'shuffle_files': True
