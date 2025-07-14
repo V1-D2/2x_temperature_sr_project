@@ -5,7 +5,7 @@
 #SBATCH --partition=salvador
 #SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-gpu=4
-#SBATCH --mem-per-gpu=128G
+#SBATCH --mem-per-gpu=64G
 #SBATCH --time=72:00:00
 
 echo "============================================"
