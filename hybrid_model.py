@@ -13,6 +13,7 @@ from basicsr.losses.basic_loss import l1_loss, mse_loss
 # Импортируем модифицированные версии
 from models.network_swinir import SwinIR
 from realesrgan.archs.discriminator_arch import UNetDiscriminatorSN
+from utils import calculate_psnr, calculate_ssim
 
 class TemperaturePerceptualLoss(nn.Module):
     """Perceptual loss адаптированный для температурных данных"""
@@ -289,7 +290,32 @@ class TemperatureSRModel(SRGANModel):
 
             self.optimizer_d.step()
 
-        self.log_dict = self.reduce_loss_dict(loss_dict)
+            # Добавляем расчет PSNR и SSIM метрик
+            if current_iter % 100 == 0:  # Считаем каждые 100 итераций
+                with torch.no_grad():
+                    # Ограничиваем выходные значения
+                    output_clamped = torch.clamp(self.output, 0, 1)
+
+                    # Конвертируем в numpy для расчета метрик
+                    try:
+                        pred_np = tensor2img([output_clamped])  # Формат HWC, диапазон [0, 255]
+                        gt_np = tensor2img([self.gt])  # Формат HWC, диапазон [0, 255]
+
+                        # Рассчитываем PSNR
+                        psnr_value = calculate_psnr(pred_np, gt_np, crop_border=0, test_y_channel=False)
+                        loss_dict['psnr'] = psnr_value
+
+                        # Рассчитываем SSIM
+                        ssim_value = calculate_ssim(pred_np, gt_np, crop_border=0, test_y_channel=False)
+                        loss_dict['ssim'] = ssim_value
+
+                    except Exception as e:
+                        # В случае ошибки ставим нулевые значения
+                        loss_dict['psnr'] = 0.0
+                        loss_dict['ssim'] = 0.0
+                        print(f"Ошибка расчета метрик: {e}")
+
+            self.log_dict = self.reduce_loss_dict(loss_dict)
 
     def test(self):
         """Тестирование с сохранением физических свойств"""
@@ -399,15 +425,29 @@ class TemperatureSRModel(SRGANModel):
             self.best_metric_results[dataset_name][metric_name]['iter'] = metric_data.get('iter', -1)
 
     def _report_metric_results(self, dataset_name):
-        """Report average metrics."""
+        """Report average metrics with enhanced temperature-specific info."""
         from basicsr.utils import get_root_logger
         logger = get_root_logger()
 
         if hasattr(self, 'metric_results') and dataset_name in self.metric_results:
+            logger.info(f'\n=== Результаты валидации для {dataset_name} ===')
+
             for metric_name, metric_value in self.metric_results[dataset_name].items():
-                logger.info(f'Validation {dataset_name} - {metric_name}: {metric_value:.4f}')
+                if metric_name == 'psnr':
+                    logger.info(f'PSNR: {metric_value:.2f} dB')
+                elif metric_name == 'ssim':
+                    logger.info(f'SSIM: {metric_value:.4f}')
+                else:
+                    logger.info(f'{metric_name.upper()}: {metric_value:.4f}')
 
                 # Report best metric
                 if hasattr(self, 'best_metric_results') and dataset_name in self.best_metric_results:
                     best_info = self.best_metric_results[dataset_name][metric_name]
-                    logger.info(f'Best {metric_name}: {best_info["val"]:.4f} at iter {best_info["iter"]}')
+                    if metric_name == 'psnr':
+                        logger.info(f'Лучший PSNR: {best_info["val"]:.2f} dB на итерации {best_info["iter"]}')
+                    elif metric_name == 'ssim':
+                        logger.info(f'Лучший SSIM: {best_info["val"]:.4f} на итерации {best_info["iter"]}')
+                    else:
+                        logger.info(f'Лучший {metric_name}: {best_info["val"]:.4f} на итерации {best_info["iter"]}')
+
+            logger.info('=' * 60)

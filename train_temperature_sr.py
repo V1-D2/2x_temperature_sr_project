@@ -117,11 +117,51 @@ def train_one_epoch(model, dataloader, current_iter, opt, logger, val_loader, ep
         model.update_learning_rate(current_iter, warmup_iter=opt['train'].get('warmup_iter', -1))
 
         # Логирование
+        # Улучшенное логирование с метриками
         if current_iter % opt['logger']['print_freq'] == 0:
             log_vars = model.get_current_log()
-            message = f'[Iter: {current_iter:07d}]'
+            message = f'[Эпоха: {epoch + 1:03d}] [Итер: {current_iter:07d}]'
+
+            # Разделяем потери и метрики для лучшей читаемости
+            losses = {}
+            metrics = {}
+
             for k, v in log_vars.items():
-                message += f' {k}: {v:.4e}'
+                if k in ['psnr', 'ssim']:
+                    metrics[k] = v
+                else:
+                    losses[k] = v
+
+            # Логируем потери
+            if losses:
+                loss_msg = ' | Потери: '
+                for k, v in losses.items():
+                    if k == 'l_g_pix':
+                        loss_msg += f'Пиксель: {v:.4e} '
+                    elif k == 'l_g_percep':
+                        loss_msg += f'Перцепт: {v:.4e} '
+                    elif k == 'l_g_gan':
+                        loss_msg += f'GAN_G: {v:.4e} '
+                    elif k == 'l_d_real':
+                        loss_msg += f'D_Real: {v:.4e} '
+                    elif k == 'l_d_fake':
+                        loss_msg += f'D_Fake: {v:.4e} '
+                    else:
+                        loss_msg += f'{k}: {v:.4e} '
+                message += loss_msg
+
+            # Логируем метрики
+            if metrics:
+                metric_msg = ' | Метрики: '
+                for k, v in metrics.items():
+                    if k == 'psnr':
+                        metric_msg += f'PSNR: {v:.2f}dB '
+                    elif k == 'ssim':
+                        metric_msg += f'SSIM: {v:.4f} '
+                    else:
+                        metric_msg += f'{k}: {v:.4f} '
+                message += metric_msg
+
             logger.info(message)
 
         # Clean GPU memory every 50 iterations
