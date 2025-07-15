@@ -290,32 +290,32 @@ class TemperatureSRModel(SRGANModel):
 
             self.optimizer_d.step()
 
-            # Добавляем расчет PSNR и SSIM метрик
-            if current_iter % 100 == 0:  # Считаем каждые 100 итераций
-                with torch.no_grad():
-                    # Ограничиваем выходные значения
-                    output_clamped = torch.clamp(self.output, 0, 1)
+        # Добавляем расчет PSNR и SSIM метрик (ВЫНЕСЛИ ИЗ БЛОКА ДИСКРИМИНАТОРА!)
+        if current_iter % 1000 == 0:  # Считаем каждые 100 итераций
+            with torch.no_grad():
+                # Ограничиваем выходные значения
+                output_clamped = torch.clamp(self.output, 0, 1)
 
-                    # Конвертируем в numpy для расчета метрик
-                    try:
-                        pred_np = tensor2img([output_clamped])  # Формат HWC, диапазон [0, 255]
-                        gt_np = tensor2img([self.gt])  # Формат HWC, диапазон [0, 255]
+                # Конвертируем в numpy для расчета метрик
+                try:
+                    pred_np = tensor2img([output_clamped])  # Формат HWC, диапазон [0, 255]
+                    gt_np = tensor2img([self.gt])  # Формат HWC, диапазон [0, 255]
 
-                        # Рассчитываем PSNR
-                        psnr_value = calculate_psnr(pred_np, gt_np, crop_border=0, test_y_channel=False)
-                        loss_dict['psnr'] = psnr_value
+                    # Рассчитываем PSNR
+                    psnr_value = calculate_psnr(pred_np, gt_np, crop_border=0, test_y_channel=False)
+                    loss_dict['psnr'] = psnr_value
 
-                        # Рассчитываем SSIM
-                        ssim_value = calculate_ssim(pred_np, gt_np, crop_border=0, test_y_channel=False)
-                        loss_dict['ssim'] = ssim_value
+                    # Рассчитываем SSIM
+                    ssim_value = calculate_ssim(pred_np, gt_np, crop_border=0, test_y_channel=False)
+                    loss_dict['ssim'] = ssim_value
 
-                    except Exception as e:
-                        # В случае ошибки ставим нулевые значения
-                        loss_dict['psnr'] = 0.0
-                        loss_dict['ssim'] = 0.0
-                        print(f"Ошибка расчета метрик: {e}")
+                except Exception as e:
+                    # В случае ошибки ставим нулевые значения
+                    loss_dict['psnr'] = 0.0
+                    loss_dict['ssim'] = 0.0
+                    print(f"Ошибка расчета метрик: {e}")
 
-            self.log_dict = self.reduce_loss_dict(loss_dict)
+        self.log_dict = self.reduce_loss_dict(loss_dict)
 
     def test(self):
         """Тестирование с сохранением физических свойств"""
