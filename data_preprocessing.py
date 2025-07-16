@@ -163,6 +163,7 @@ class TemperatureDataset(Dataset):
 
             if (i + 1) % 1000 == 0:
                 print(f"  Processed {i + 1}/{n_samples} samples")
+                gc.collect()
 
         data.close()
         gc.collect()

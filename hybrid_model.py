@@ -223,6 +223,9 @@ class TemperatureSRModel(SRGANModel):
     def optimize_parameters(self, current_iter):
         """Оптимизация с учетом физических ограничений"""
 
+        # Clear cache at start
+        torch.cuda.empty_cache()
+
         # ============ ГЕНЕРАТОР ОБУЧАЕТСЯ ВСЕГДА ============
         for p in self.net_d.parameters():
             p.requires_grad = False
@@ -249,10 +252,14 @@ class TemperatureSRModel(SRGANModel):
 
         # GAN loss - только после прогрева
         if self.cri_gan and current_iter > self.net_d_init_iters:
-            fake_g_pred = self.net_d(self.output)
+            # Detach and clone to reduce memory
+            output_for_d = self.output.detach().clone()
+            fake_g_pred = self.net_d(output_for_d)
             l_g_gan = self.cri_gan(fake_g_pred, True, is_disc=False)
             l_g_total += l_g_gan
             loss_dict['l_g_gan'] = l_g_gan
+            # Clear immediately
+            del fake_g_pred, output_for_d
 
         # ВСЕГДА обновляем генератор
         l_g_total.backward()
@@ -264,8 +271,11 @@ class TemperatureSRModel(SRGANModel):
                 max_norm=self.opt['train'].get('grad_clip_norm', 20.0)  # Увеличено с 0.1
             )
 
-        torch.cuda.empty_cache()
+
         self.optimizer_g.step()
+
+        del l_g_total
+        torch.cuda.empty_cache()
 
         # ============ ДИСКРИМИНАТОР ============
         if current_iter > self.net_d_init_iters and current_iter % self.net_d_iters == 0:
@@ -275,11 +285,12 @@ class TemperatureSRModel(SRGANModel):
             self.optimizer_d.zero_grad()
 
             # Real
-            real_d_pred = self.net_d(self.gt)
+            real_d_pred = self.net_d(self.gt.detach())  # добавил .detach()
             l_d_real = self.cri_gan(real_d_pred, True, is_disc=True)
             loss_dict['l_d_real'] = l_d_real
             loss_dict['out_d_real'] = torch.mean(real_d_pred.detach())
             l_d_real.backward()
+            del real_d_pred, l_d_real
 
             # Fake
             fake_d_pred = self.net_d(self.output.detach())
@@ -287,8 +298,11 @@ class TemperatureSRModel(SRGANModel):
             loss_dict['l_d_fake'] = l_d_fake
             loss_dict['out_d_fake'] = torch.mean(fake_d_pred.detach())
             l_d_fake.backward()
+            del fake_d_pred, l_d_fake
 
             self.optimizer_d.step()
+
+            torch.cuda.empty_cache()
 
         # Добавляем расчет PSNR и SSIM метрик (ВЫНЕСЛИ ИЗ БЛОКА ДИСКРИМИНАТОРА!)
         if current_iter % 1000 == 0:  # Считаем каждые 100 итераций
@@ -316,6 +330,7 @@ class TemperatureSRModel(SRGANModel):
                     print(f"Ошибка расчета метрик: {e}")
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
+        torch.cuda.empty_cache()
 
     def test(self):
         """Тестирование с сохранением физических свойств"""
