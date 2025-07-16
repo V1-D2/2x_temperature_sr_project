@@ -224,7 +224,7 @@ class TemperatureSRModel(SRGANModel):
         """Оптимизация с учетом физических ограничений"""
 
         # Clear cache at start
-        #torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
 
         # ============ ГЕНЕРАТОР ОБУЧАЕТСЯ ВСЕГДА ============
         for p in self.net_d.parameters():
@@ -274,8 +274,8 @@ class TemperatureSRModel(SRGANModel):
 
         self.optimizer_g.step()
 
-        #del l_g_total
-        #torch.cuda.empty_cache()
+        del l_g_total
+        torch.cuda.empty_cache()
 
         # ============ ДИСКРИМИНАТОР ============
         if current_iter > self.net_d_init_iters and current_iter % self.net_d_iters == 0:
@@ -302,7 +302,7 @@ class TemperatureSRModel(SRGANModel):
 
             self.optimizer_d.step()
 
-            #torch.cuda.empty_cache()
+            torch.cuda.empty_cache()
 
         # Добавляем расчет PSNR и SSIM метрик (ВЫНЕСЛИ ИЗ БЛОКА ДИСКРИМИНАТОРА!)
         if current_iter % 100 == 0:  # Считаем каждые 100 итераций
@@ -330,7 +330,7 @@ class TemperatureSRModel(SRGANModel):
                     print(f"Ошибка расчета метрик: {e}")
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
-        if current_iter % 20 == 0:
+        if current_iter % 10 == 0:
             torch.cuda.empty_cache()
 
     def test(self):
