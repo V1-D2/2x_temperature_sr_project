@@ -142,7 +142,7 @@ def save_comparison_plot(results, save_path, idx):
              bbox=dict(boxstyle="round,pad=0.5", facecolor="white", alpha=0.8))
 
     plt.tight_layout()
-    plt.savefig(os.path.join(save_path, f'comparison_{idx:04d}.png'), dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(save_path, f'comparison_{idx:04d}.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 
