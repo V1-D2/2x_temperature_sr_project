@@ -1,7 +1,7 @@
 # Конфигурация для обучения температурной Super-Resolution модели
 
 # Общие параметры
-name = 'TemperatureSR_SwinIR_ESRGAN_x2'
+name = 'TemperatureSR_SwinIR_ESRGAN_x2_90k'
 model_type = 'TemperatureSRModel'
 scale = 2
 num_gpu = 1  # Количество GPU
