@@ -109,7 +109,7 @@ train = {
         'real_label_val': 1.0,
         'fake_label_val': 0.0,
         #'loss_weight': 0.1
-        'loss_weight': 0.1
+        'loss_weight': 1.0
     },
     # Параметры дискриминатора
     'net_d_iters': 10,
