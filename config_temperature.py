@@ -17,7 +17,7 @@ datasets = {
             'target_width': 220
         },
         'scale_factor': 2,
-        'batch_size': 2,
+        'batch_size': 4,
         'samples_per_file': 1000,  # Ограничение для управления памятью
         'num_worker': 4,
         'pin_memory': True,
@@ -91,14 +91,16 @@ train = {
     # Loss функции
     'pixel_opt': {
         'type': 'PhysicsConsistencyLoss',
-        'loss_weight': 1.0,
+        'loss_weight': 100.0,
+        #'loss_weight': 1.0,
         'gradient_weight': 0.08,
         'smoothness_weight': 0.03,
         'reduction': 'mean'
     },
     'perceptual_opt': {
         'type': 'TemperaturePerceptualLoss',
-        'loss_weight': 0.1,
+        #'loss_weight': 0.1,
+        'loss_weight': 10.0,
         'feature_weights': [0.1, 0.2, 1.0, 1.0]
     },
     'gan_opt': {
@@ -106,6 +108,7 @@ train = {
         'gan_type': 'lsgan',
         'real_label_val': 1.0,
         'fake_label_val': 0.0,
+        #'loss_weight': 0.1
         'loss_weight': 0.1
     },
     # Параметры дискриминатора
@@ -114,7 +117,7 @@ train = {
     # Частота сохранения
     'manual_seed': 10,
     'use_grad_clip': True,
-    'grad_clip_norm': 0.1,
+    'grad_clip_norm': 7.0,
     'use_ema': True                 # Exponential Moving Averag
 }
 
