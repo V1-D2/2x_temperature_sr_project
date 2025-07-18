@@ -17,7 +17,7 @@ datasets = {
             'target_width': 220
         },
         'scale_factor': 2,
-        'batch_size': 4,
+        'batch_size': 8,
         'samples_per_file': 1000,  # Ограничение для управления памятью
         'num_worker': 4,
         'pin_memory': True,
@@ -27,7 +27,7 @@ datasets = {
         'name': 'TemperatureValDataset',
         'dataroot_gt': None,
         'npz_file': None,  # Будет задан в train script
-        'n_samples': 10,
+        'n_samples': 100,
         'scale_factor': 2
     }
 }
