@@ -260,6 +260,24 @@ def main():
 
     # Создаем экземпляр модели напрямую
     model = TemperatureSRModel(opt)
+    ''''''
+    #Fix
+    from torch.cuda.amp import GradScaler
+    scaler = GradScaler()
+    model.scaler = scaler
+    logger.info('Enabled Automatic Mixed Precision (AMP) training')
+
+    try:
+        if torch.__version__ >= '2.0.0':
+            logger.info('Compiling models with torch.compile()...')
+            model.net_g = torch.compile(model.net_g, mode='reduce-overhead')
+            if hasattr(model, 'net_d'):
+                model.net_d = torch.compile(model.net_d, mode='reduce-overhead')
+            logger.info('Model compilation complete')
+    except Exception as e:
+        logger.warning(f'Failed to compile models: {e}. Continuing without compilation.')
+
+    #Fix
 
     # Возобновление обучения
     start_iter = 0
