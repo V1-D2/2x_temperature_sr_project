@@ -266,7 +266,7 @@ def main():
     scaler = GradScaler()
     model.scaler = scaler
     logger.info('Enabled Automatic Mixed Precision (AMP) training')
-
+    '''
     try:
         if torch.__version__ >= '2.0.0':
             logger.info('Compiling models with torch.compile()...')
@@ -278,6 +278,9 @@ def main():
         logger.warning(f'Failed to compile models: {e}. Continuing without compilation.')
 
     #Fix
+    '''
+    # Temporarily disable torch.compile due to CUDA library issues
+    logger.info('Skipping torch.compile due to environment constraints')
 
     # Возобновление обучения
     start_iter = 0
