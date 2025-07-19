@@ -165,7 +165,7 @@ def train_one_epoch(model, dataloader, current_iter, opt, logger, val_loader, ep
             logger.info(message)
 
         # Clean GPU memory every 50 iterations
-        if current_iter % 10 == 0:
+        if current_iter % 200 == 0:
             torch.cuda.empty_cache()
 
         # Сохранение модели

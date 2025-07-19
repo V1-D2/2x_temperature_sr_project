@@ -224,7 +224,7 @@ class TemperatureSRModel(SRGANModel):
         """Оптимизация с учетом физических ограничений"""
 
         # Clear cache at start
-        torch.cuda.empty_cache()
+        #torch.cuda.empty_cache()
 
         # ============ ГЕНЕРАТОР ОБУЧАЕТСЯ ВСЕГДА ============
         for p in self.net_d.parameters():
@@ -330,8 +330,8 @@ class TemperatureSRModel(SRGANModel):
                     print(f"Ошибка расчета метрик: {e}")
 
         self.log_dict = self.reduce_loss_dict(loss_dict)
-        if current_iter % 10 == 0:
-            torch.cuda.empty_cache()
+        #if current_iter % 10 == 0:
+         #   torch.cuda.empty_cache()
 
     def test(self):
         """Тестирование с сохранением физических свойств"""
