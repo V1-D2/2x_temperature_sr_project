@@ -105,7 +105,7 @@ class TemperatureDataPreprocessor:
 
         return lr_temp, hr_temp
 
-'''
+
 class TemperatureDataset(Dataset):
     """Dataset для температурных данных с инкрементальной загрузкой"""
 
@@ -183,74 +183,6 @@ class TemperatureDataset(Dataset):
             'lq': lr_tensor,  # low quality (low resolution)
             'gt': hr_tensor,  # ground truth (high resolution)
             'metadata': meta
-        }
-
-'''
-
-
-class TemperatureDataset(Dataset):
-    """Dataset для температурных данных с ленивой загрузкой"""
-
-    def __init__(self, npz_file: str, preprocessor: TemperatureDataPreprocessor,
-                 scale_factor: int = 2, max_samples: Optional[int] = None):
-        self.npz_file = npz_file
-        self.preprocessor = preprocessor
-        self.scale_factor = scale_factor
-        self.max_samples = max_samples
-        self.opt = {'name': 'TemperatureDataset'}
-
-        # Только проверяем структуру файла, не загружаем данные
-        print(f"Initializing dataset from {npz_file}...")
-        with np.load(npz_file, allow_pickle=True) as data:
-            if 'swaths' in data:
-                self.data_key = 'swaths'
-            elif 'swath_array' in data:
-                self.data_key = 'swath_array'
-            else:
-                print(f"Available keys in NPZ: {list(data.keys())}")
-                raise KeyError(f"Neither 'swaths' nor 'swath_array' found in {npz_file}")
-
-            self.total_samples = len(data[self.data_key])
-
-        self.n_samples = self.total_samples if max_samples is None else min(self.total_samples, max_samples)
-        print(f"Dataset initialized with {self.n_samples} samples (lazy loading enabled)")
-
-    def __len__(self):
-        return self.n_samples
-
-    def __getitem__(self, idx):
-        # Загружаем только нужный элемент
-        with np.load(self.npz_file, allow_pickle=True) as data:
-            swath = data[self.data_key][idx]
-
-        temp = swath['temperature']
-        meta = swath['metadata']
-
-        # Предобработка
-        temp = self.preprocessor.crop_or_pad(temp)
-
-        # Сохраняем мин/макс для денормализации
-        temp_min, temp_max = np.min(temp), np.max(temp)
-
-        # Нормализация
-        temp_norm = self.preprocessor.normalize_temperature(temp)
-
-        # Создаем пару LR-HR
-        lr, hr = self.preprocessor.create_lr_hr_pair(temp_norm, self.scale_factor)
-
-        # Конвертируем в тензоры и добавляем канальное измерение
-        lr_tensor = torch.from_numpy(lr).unsqueeze(0).float()
-        hr_tensor = torch.from_numpy(hr).unsqueeze(0).float()
-
-        return {
-            'lq': lr_tensor,  # low quality (low resolution)
-            'gt': hr_tensor,  # ground truth (high resolution)
-            'metadata': {
-                'original_min': temp_min,
-                'original_max': temp_max,
-                'orbit_type': meta.get('orbit_type', 'unknown'),
-                'scale_factor': meta.get('scale_factor', 1.0)
-            }
         }
 
 

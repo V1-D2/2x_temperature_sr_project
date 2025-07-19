@@ -245,7 +245,7 @@ class TemperatureSRModel(SRGANModel):
                 loss_dict[f'l_g_pix_{k}'] = v
 
         # Perceptual loss - ВСЕГДА
-        if self.cri_perceptual:
+        if self.cri_perceptual and current_iter % 5 == 0:
             l_g_percep = self.cri_perceptual(self.output, self.gt)
             l_g_total += l_g_percep * self.opt['train']['perceptual_opt']['loss_weight']
             loss_dict['l_g_percep'] = l_g_percep
@@ -305,7 +305,7 @@ class TemperatureSRModel(SRGANModel):
             torch.cuda.empty_cache()
 
         # Добавляем расчет PSNR и SSIM метрик (ВЫНЕСЛИ ИЗ БЛОКА ДИСКРИМИНАТОРА!)
-        if current_iter % 100 == 0:  # Считаем каждые 100 итераций
+        if current_iter % 500 == 0:  # Считаем каждые 100 итераций
             with torch.no_grad():
                 # Ограничиваем выходные значения
                 output_clamped = torch.clamp(self.output, 0, 1)
