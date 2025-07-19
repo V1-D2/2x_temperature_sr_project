@@ -161,7 +161,7 @@ class TemperatureDataset(Dataset):
                 'scale_factor': meta.get('scale_factor', 1.0)
             })
 
-            if (i + 1) % 10000 == 0:
+            if (i + 1) % 1000 == 0:
                 print(f"  Processed {i + 1}/{n_samples} samples")
                 gc.collect()
 
