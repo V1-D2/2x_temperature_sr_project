@@ -26,7 +26,7 @@ OUTPUT_DIR="$PROJECT_DIR/cascaded_results"
 
 # Model path - update this to your trained model checkpoint
 # Assuming the model is in experiments folder from training
-MODEL_PATH="$PROJECT_DIR/experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_latest.pth"
+MODEL_PATH="$PROJECT_DIR/experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_45738.pth"
 
 # Check if model exists
 if [ ! -f "$MODEL_PATH" ]; then
