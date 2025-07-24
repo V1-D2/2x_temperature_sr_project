@@ -280,17 +280,28 @@ def test_temperature_sr_model(npz_dir: str, model_path: str, num_samples: int = 
                 temperature = temperature * scale_factor
 
                 # Filter invalid values
-                temperature = np.where((temperature < 50) | (temperature > 350), np.nan, temperature)
-                valid_ratio = np.sum(~np.isnan(temperature)) / temperature.size
+                #temperature = np.where((temperature < 50) | (temperature > 350), np.nan, temperature)
+                #valid_ratio = np.sum(~np.isnan(temperature)) / temperature.size
 
-                if valid_ratio < 0.5:
-                    continue
+                #if valid_ratio < 0.5:
+                 #   continue
 
                 # Fill NaN values
-                valid_mask = ~np.isnan(temperature)
-                if np.sum(valid_mask) > 0:
-                    mean_temp = np.mean(temperature[valid_mask])
-                    temperature = np.where(np.isnan(temperature), mean_temp, temperature)
+                #valid_mask = ~np.isnan(temperature)
+                #if np.sum(valid_mask) > 0:
+                 #   mean_temp = np.mean(temperature[valid_mask])
+                  #  temperature = np.where(np.isnan(temperature), mean_temp, temperature)
+
+                # No filtering at all - just use the temperature as is
+                # Only fill NaN values if they exist
+                if np.any(np.isnan(temperature)):
+                    valid_mask = ~np.isnan(temperature)
+                    if np.sum(valid_mask) > 0:
+                        mean_temp = np.mean(temperature[valid_mask])
+                        temperature = np.where(np.isnan(temperature), mean_temp, temperature)
+                    else:
+                        # If all values are NaN, skip this sample
+                        continue
 
                 # Test sample
                 logger.info(f"\nTesting sample {tested_count + 1}/{num_samples} (swath {idx})")
@@ -362,7 +373,7 @@ def main():
     # Configuration
     NPZ_DIR = "/home/vdidur/temperature_sr_project/data"
     MODEL_PATH = "./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_45738.pth"
-    NUM_SAMPLES = 5
+    NUM_SAMPLES = 50
     SAVE_DIR = "./test_temperature_results"
 
     logger.info("Temperature SR Model Testing")
