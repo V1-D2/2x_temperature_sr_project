@@ -314,7 +314,9 @@ class PatchBasedTemperatureSR:
 
 def save_temperature_image(temperature: np.ndarray, save_path: str, dpi: int = 100):
     """Save temperature array as image with exact pixel mapping"""
-    plt.imsave(save_path, temperature, cmap='turbo', origin='upper')
+    # Индивидуальная нормализация для максимального контраста
+    temp_norm = (temperature - temperature.min()) / (temperature.max() - temperature.min())
+    plt.imsave(save_path, temp_norm, cmap='turbo', origin='upper')
 
 
 def cascaded_temperature_sr(npz_dir: str, model_path: str, num_samples: int = 5,
@@ -673,11 +675,10 @@ def create_progression_visualization(results: List[Dict], save_dir: str):
         (result['sr_8x'], '8x SR (2x→2x→2x)', result['sr_8x'].shape)
     ]
 
-    vmin = min(img.min() for img, _, _ in images)
-    vmax = max(img.max() for img, _, _ in images)
-
     for i, (img, title, shape) in enumerate(images):
-        im = axes[0, i].imshow(img, cmap='turbo', aspect='auto', vmin=vmin, vmax=vmax)
+        # Индивидуальная нормализация каждого изображения
+        img_norm = (img - img.min()) / (img.max() - img.min())
+        im = axes[0, i].imshow(img_norm, cmap='turbo', aspect='auto')
         axes[0, i].set_title(f'{title}\n{shape}')
         axes[0, i].axis('off')
         plt.colorbar(im, ax=axes[0, i], fraction=0.046)
@@ -712,8 +713,9 @@ def create_progression_visualization(results: List[Dict], save_dir: str):
             (result['sr_8x'][y1:y2, x1:x2], '8x SR')
         ]
 
-        for i, (img, title) in enumerate(zoomed_images):
-            axes[1, i].imshow(img, cmap='turbo', aspect='auto', vmin=vmin, vmax=vmax)
+        for i, (img, title, shape) in enumerate(images):
+            img_norm = (img - img.min()) / (img.max() - img.min())
+            im = axes[0, i].imshow(img_norm, cmap='turbo', aspect='auto')
             axes[1, i].set_title(f'{title} - Zoomed')
             axes[1, i].axis('off')
     else:
