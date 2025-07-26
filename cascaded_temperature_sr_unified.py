@@ -324,10 +324,18 @@ def save_temperature_image_enhanced(temperature: np.ndarray, save_path: str, dpi
     import matplotlib.cm as cm
     from PIL import Image
 
-    # Индивидуальная нормализация для максимального контраста
-    temp_norm = (temperature - temperature.min()) / (temperature.max() - temperature.min())
+    # КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: Используем percentile normalization вместо min/max
+    # Это даст более контрастное изображение, игнорируя выбросы
+    p_low, p_high = 1, 99  # Как в ZSSR
+    temp_min, temp_max = np.percentile(temperature, [p_low, p_high])
 
-    # Apply turbo colormap and convert to RGB (как в ZSSR)
+    # Clip к percentile диапазону
+    temperature_clipped = np.clip(temperature, temp_min, temp_max)
+
+    # Нормализация к [0,1]
+    temp_norm = (temperature_clipped - temp_min) / (temp_max - temp_min)
+
+    # Apply turbo colormap and convert to RGB
     turbo_cmap = cm.get_cmap('turbo')
     turbo_rgb = (turbo_cmap(temp_norm)[:, :, :3] * 255).astype(np.uint8)
 
@@ -693,7 +701,11 @@ def create_progression_visualization(results: List[Dict], save_dir: str):
 
     for i, (img, title, shape) in enumerate(images):
         # Индивидуальная нормализация каждого изображения
-        img_norm = (img - img.min()) / (img.max() - img.min())
+        # Используем percentile normalization для каждого изображения
+        p_low, p_high = 1, 99
+        img_min, img_max = np.percentile(img, [p_low, p_high])
+        img_clipped = np.clip(img, img_min, img_max)
+        img_norm = (img_clipped - img_min) / (img_max - img_min)
         im = axes[0, i].imshow(img_norm, cmap='turbo', aspect='auto')
         axes[0, i].set_title(f'{title}\n{shape}')
         axes[0, i].axis('off')
@@ -730,7 +742,11 @@ def create_progression_visualization(results: List[Dict], save_dir: str):
         ]
 
         for i, (img, title, shape) in enumerate(images):
-            img_norm = (img - img.min()) / (img.max() - img.min())
+            # Используем percentile normalization для каждого изображения
+            p_low, p_high = 1, 99
+            img_min, img_max = np.percentile(img, [p_low, p_high])
+            img_clipped = np.clip(img, img_min, img_max)
+            img_norm = (img_clipped - img_min) / (img_max - img_min)
             im = axes[0, i].imshow(img_norm, cmap='turbo', aspect='auto')
             axes[1, i].set_title(f'{title} - Zoomed')
             axes[1, i].axis('off')
