@@ -319,6 +319,22 @@ def save_temperature_image(temperature: np.ndarray, save_path: str, dpi: int = 1
     plt.imsave(save_path, temp_norm, cmap='turbo', origin='upper')
 
 
+def save_temperature_image_enhanced(temperature: np.ndarray, save_path: str, dpi: int = 100):
+    """Save temperature array as image with exact pixel mapping"""
+    import matplotlib.cm as cm
+    from PIL import Image
+
+    # Индивидуальная нормализация для максимального контраста
+    temp_norm = (temperature - temperature.min()) / (temperature.max() - temperature.min())
+
+    # Apply turbo colormap and convert to RGB (как в ZSSR)
+    turbo_cmap = cm.get_cmap('turbo')
+    turbo_rgb = (turbo_cmap(temp_norm)[:, :, :3] * 255).astype(np.uint8)
+
+    # Save as PNG (1:1 pixel mapping)
+    Image.fromarray(turbo_rgb).save(save_path)
+
+
 def cascaded_temperature_sr(npz_dir: str, model_path: str, num_samples: int = 5,
                             save_dir: str = "./cascaded_swinir_results") -> List[Dict]:
     """
@@ -555,11 +571,11 @@ def save_results(results: List[Dict], save_dir: str, variant: str):
         )
 
         # Save temperature images (colormap)
-        save_temperature_image(result['original'],
+        save_temperature_image_enhanced(result['original'],
                                os.path.join(images_dir, f'sample_{i + 1:03d}_original.png'))
-        save_temperature_image(sr_data,
+        save_temperature_image_enhanced(sr_data,
                                os.path.join(images_dir, f'sample_{i + 1:03d}_sr_{variant}.png'))
-        save_temperature_image(bicubic_data,
+        save_temperature_image_enhanced(bicubic_data,
                                os.path.join(images_dir, f'sample_{i + 1:03d}_bicubic_{variant}.png'))
 
         # Save grayscale versions (properly normalized for SwinIR [0,1] range)

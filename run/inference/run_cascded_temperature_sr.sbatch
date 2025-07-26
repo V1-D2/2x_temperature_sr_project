@@ -131,7 +131,7 @@ apptainer exec --nv \
     python cascaded_temperature_sr_unified.py \
     --npz-dir $DATA_DIR \
     --model-path $MODEL_PATH \
-    --num-samples 5 \
+    --num-samples 1 \
     --save-dir ./cascaded_swinir_results \
     --overlap-ratio 0.75
 
