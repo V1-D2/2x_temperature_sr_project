@@ -117,7 +117,7 @@ apptainer exec --nv \
     /home/shared/containers/tensorflow-25.02-py3.sif \
     python fine_tune_temperature_sr.py \
     --pretrained_model "$PRETRAINED_MODEL" \
-    --data_dir /scratch/tmp/data \
+    --data_dir /scratch/tmp/data/new_data_all \
     --output_dir ./experiments_finetune \
     --num_epochs $NUM_EPOCHS \
     --learning_rate $LEARNING_RATE \
