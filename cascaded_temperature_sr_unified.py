@@ -587,18 +587,18 @@ def save_results(results: List[Dict], save_dir: str, variant: str):
                                os.path.join(images_dir, f'sample_{i + 1:03d}_bicubic_{variant}.png'))
 
         # Save grayscale versions (properly normalized for SwinIR [0,1] range)
-        # Normalize to [0, 1] for tensor2img
-        temp_min = np.min(result['original'])
-        temp_max = np.max(result['original'])
+        # Percentile normalization для grayscale
+        p_low, p_high = 1, 99
+        temp_min, temp_max = np.percentile(result['original'], [p_low, p_high])
 
-        if temp_max > temp_min:
-            orig_norm = (result['original'] - temp_min) / (temp_max - temp_min)
-            sr_norm = (sr_data - temp_min) / (temp_max - temp_min)
-            bicubic_norm = (bicubic_data - temp_min) / (temp_max - temp_min)
-        else:
-            orig_norm = np.zeros_like(result['original'])
-            sr_norm = np.zeros_like(sr_data)
-            bicubic_norm = np.zeros_like(bicubic_data)
+        # Нормализация с percentile
+        def normalize_with_percentile(data):
+            data_clipped = np.clip(data, temp_min, temp_max)
+            return (data_clipped - temp_min) / (temp_max - temp_min)
+
+        orig_norm = normalize_with_percentile(result['original'])
+        sr_norm = normalize_with_percentile(sr_data)
+        bicubic_norm = normalize_with_percentile(bicubic_data)
 
         # Clip to ensure [0, 1] range
         orig_norm = np.clip(orig_norm, 0, 1)
