@@ -86,7 +86,7 @@ echo "============================================"
 echo "Checking data directory..."
 echo "Data should be available at: /scratch/tmp/data"
 ls -la /scratch/tmp/data | head -5
-echo "Total NPZ files: $(ls /scratch/tmp/data/*.npz 2>/dev/null | wc -l)"
+echo "Total NPZ files: $(ls /scratch/tmp/data/new_data_all/*.npz 2>/dev/null | wc -l)"
 
 echo "============================================"
 echo "Starting Temperature SR Fine-tuning with TensorFlow container:"
