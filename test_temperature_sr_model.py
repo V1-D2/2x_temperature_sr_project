@@ -372,7 +372,7 @@ def main():
 
     # Configuration
     NPZ_DIR = "/home/vdidur/temperature_sr_project/data"
-    MODEL_PATH = ".experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_19469.pth"
+    MODEL_PATH = "./experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_19469.pth"
     NUM_SAMPLES = 500
     SAVE_DIR = "./test_temperature_results_fine_tune"
 
@@ -383,7 +383,7 @@ def main():
     if not os.path.exists(MODEL_PATH):
         logger.error(f"Model not found: {MODEL_PATH}")
         logger.info("Looking for available models...")
-        experiments_dir = "./experiments"
+        experiments_dir = "./experiments_finetune"
         if os.path.exists(experiments_dir):
             for root, dirs, files in os.walk(experiments_dir):
                 for file in files:
