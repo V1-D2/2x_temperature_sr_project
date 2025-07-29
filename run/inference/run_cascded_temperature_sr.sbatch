@@ -78,8 +78,8 @@ echo "============================================"
 
 MODEL_PATH=""
 # Try different possible locations
-if [ -f "./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_45738.pth" ]; then
-    MODEL_PATH="./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_45738.pth"
+if [ -f "/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_47343.pth" ]; then
+    MODEL_PATH="/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_47343.pth"
 elif [ -f "./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_latest.pth" ]; then
     MODEL_PATH="./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_latest.pth"
 else
@@ -132,7 +132,7 @@ apptainer exec --nv \
     --npz-dir $DATA_DIR \
     --model-path $MODEL_PATH \
     --num-samples 5 \
-    --save-dir ./cascaded_swinir_results \
+    --save-dir ./cascaded_swinir_results_fine_tuned \
     --overlap-ratio 0.75
 
 # Check if processing was successful
