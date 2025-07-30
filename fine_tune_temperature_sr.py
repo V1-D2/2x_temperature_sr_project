@@ -274,10 +274,19 @@ def main():
 
     # Обновляем learning rate для fine-tuning
     train['optim_g']['lr'] = args.learning_rate
-    train['optim_d']['lr'] = args.learning_rate * 0.5  # Дискриминатор с меньшим lr
+    train['optim_d']['lr'] = args.learning_rate * 0.7  # Дискриминатор с меньшим lr
+
+    # Increase GAN influence for fine-tuning
+    train['gan_opt']['loss_weight'] = 8.0  # Increase from 1.0 to 8.0
+    train['pixel_opt']['loss_weight'] = 20.0  # Decrease from 100.0 to 20.0
+    train['perceptual_opt']['loss_weight'] = 5.0  # Decrease from 10.0 to 5.0
 
     # Отключаем warmup для fine-tuning
     train['warmup_iter'] = 0
+
+    # Increase discriminator training frequency
+    train['net_d_iters'] = 2  # Update discriminator 2 times per generator update
+    train['net_d_init_iters'] = 0  # Start GAN training immediately
 
     # Создаем полную конфигурацию
     opt = {
@@ -409,8 +418,8 @@ def main():
                 )
 
             # Сохраняем checkpoint после каждого файла при fine-tuning
-            logger.info(f'Saving checkpoint after file {file_idx + 1}')
-            model.save(epoch, current_iter)
+            #logger.info(f'Saving checkpoint after file {file_idx + 1}')
+            #model.save(epoch, current_iter)
 
             file_idx += 1
 
