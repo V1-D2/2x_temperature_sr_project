@@ -372,7 +372,7 @@ def main():
 
     # Configuration
     NPZ_DIR = "/home/vdidur/temperature_sr_project/data"
-    MODEL_PATH = "./experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_66099.pth"
+    MODEL_PATH = "./experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_68599.pth"
     NUM_SAMPLES = 500
     SAVE_DIR = "./test_temperature_results_fine_tune"
 
