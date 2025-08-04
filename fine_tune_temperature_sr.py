@@ -277,7 +277,7 @@ def main():
     train['optim_d']['lr'] = args.learning_rate * 0.7  # Дискриминатор с меньшим lr
 
     # Increase GAN influence for fine-tuning
-    train['gan_opt']['loss_weight'] = 8.0  # Increase from 1.0 to 8.0
+    train['gan_opt']['loss_weight'] = 11.0  # Increase from 1.0 to 8.0
     train['pixel_opt']['loss_weight'] = 20.0  # Decrease from 100.0 to 20.0
     train['perceptual_opt']['loss_weight'] = 5.0  # Decrease from 10.0 to 5.0
 

@@ -20,7 +20,7 @@ export APPTAINER_QUIET=1
 export SINGULARITY_QUIET=1
 
 # Path to pretrained model
-PRETRAINED_MODEL="/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250727_213241/models/net_g_68599.pth"
+PRETRAINED_MODEL="/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250731_191549/models/net_g_40000.pth"
 
 # Check if pretrained model exists
 if [ ! -f "$PRETRAINED_MODEL" ]; then
