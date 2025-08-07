@@ -78,8 +78,8 @@ echo "============================================"
 
 MODEL_PATH=""
 # Try different possible locations
-if [ -f "/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250804_041922/models/net_g_64206.pth" ]; then
-    MODEL_PATH="/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250804_041922/models/net_g_64206.pth"
+if [ -f "/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250804_041922/models/net_g_60000.pth" ]; then
+    MODEL_PATH="/home/vdidur/2x_temperature_sr_project/experiments_finetune/TemperatureSR_FineTune_20250804_041922/models/net_g_60000.pth"
 elif [ -f "./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_latest.pth" ]; then
     MODEL_PATH="./experiments/TemperatureSR_SwinIR_ESRGAN_x2_90k/models/net_g_latest.pth"
 else
