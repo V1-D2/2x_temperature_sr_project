@@ -21,6 +21,15 @@ This repository implements a specialized deep learning pipeline for super-resolu
 - Temperature drift: 0.2K across 8× cascaded stages
 
 ---
+## Results
+### Example 8× Super-Resolution Result
+
+|               | Original (LR)                                | Bicubic 8×                                   | SwinIR + Real-ESRGAN 8×                    |
+|--------------|-----------------------------------------------|----------------------------------------------|--------------------------------------------|
+| **Grayscale**| ![](images/sample_001_original_gray.png)      | ![](images/sample_001_bicubic_8x_gray.png)   | ![](images/sample_001_sr_8x_gray.png)      |
+| **Color**    | ![](images/sample_001_original.png)           | ![](images/sample_001_bicubic_8x.png)        | ![](images/sample_001_sr_8x.png)           |
+
+---
 
 ## Architecture
 
