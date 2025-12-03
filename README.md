@@ -376,7 +376,7 @@ python test_temperature_sr_model.py \
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{Volodymyr_Didur_25
+@article{Volodymyr_Didur_2025
   title={Advanced Deep Learning Models for Generating Super-resolution AMSR2 Imagery in Support of Sea Ice Forecasting and Analysis},
   author={Volodymyr Didur},
   journal={AGU2025},
