@@ -75,7 +75,7 @@ Conv2d(64 → 1, kernel=3×3) → 1×2H×2W
 ```
 Projects features back to temperature space.
 
-**Parameter count:** ~69.7M (generator)
+**Parameter count:** ~3.7M (generator)
 
 ### Discriminator: U-Net with Spectral Normalization
 
@@ -309,15 +309,6 @@ Automatically backs up the original model before fine-tuning.
 
 ---
 
-## Model Weights
-
-Pre-trained checkpoints available at [releases page](https://github.com/yourusername/thermal-satellite-sr/releases):
-
-- `net_g_45738.pth` - Final 2× SR generator (69.7M params)
-- `net_d_45738.pth` - Discriminator (2.8M params)
-
----
-
 ## Evaluation
 
 ```bash
@@ -376,11 +367,11 @@ python test_temperature_sr_model.py \
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{your2024thermal,
+@article{Volodymyr_Didur_@025
   title={Thermal Satellite Image Super-Resolution via SwinIR-ESRGAN Hybrid Architecture},
-  author={Your Name},
-  journal={Remote Sensing},
-  year={2024}
+  author={Volodymyr Didur},
+  journal={AGU2025},
+  year={2025}
 }
 ```
 
