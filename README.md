@@ -19,7 +19,6 @@ This repository implements a specialized deep learning pipeline for super-resolu
 - PSNR: 39 dB (2× SR)
 - SSIM: 0.97 (structural similarity preserved)
 - Temperature drift: 0.2K across 8× cascaded stages
-- Inference: ~10-20s per 2048×208 image (RTX 2080 Ti)
 
 ---
 
