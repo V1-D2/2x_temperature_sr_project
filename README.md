@@ -373,7 +373,7 @@ python test_temperature_sr_model.py \
 
 ## Citation
 
-If you use this code in your research, please cite:
+If you use this code or this framework in your research, please cite:
 
 ```bibtex
 @article{Volodymyr_Didur_2025
